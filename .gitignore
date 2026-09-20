@@ -1,0 +1,94 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib60/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ---- Environments ----
+.env
+.venv
+env/
+venv/
+ENV/
+.conda/
+.python-version
+
+# ---- Testing / typing / linting ----
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# ---- Notebooks ----
+.ipynb_checkpoints/
+
+# ---- Editors / OS ----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- SimKit / experiment outputs ----
+# Results, caches and renders are reproducible; keep them out of git.
+results/
+outputs/
+output/
+cache/
+.cache/
+checkpoints/
+logs/
+wandb/
+runs/
+
+# Rendered frames / videos
+*.mp4
+*.avi
+*.mov
+*.gif
+frames/
+renders/
+
+# Precomputed simulation artifacts (subspaces, modes, clusters, ...)
+*.npz
+*.npy
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+
+# Viewer state written next to the scripts that open it
+polyscope.ini
+.polyscope.ini
+imgui.ini
+
+# ---- data/ is the asset store, never ignored ----
+# The rules above (caches, npz/npy, renders) must not swallow curated assets.
+!data/**
