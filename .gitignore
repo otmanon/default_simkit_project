@@ -58,7 +58,9 @@ Thumbs.db
 
 # ---- SimKit / experiment outputs ----
 # Results, caches and renders are reproducible; keep them out of git.
-results/
+# results/ is the default output root -- the directory is tracked, contents are not.
+results/*
+!results/.gitkeep
 outputs/
 output/
 cache/

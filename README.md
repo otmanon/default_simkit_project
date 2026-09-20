@@ -11,8 +11,9 @@ on a branch owned by this project.
 | -------------- | ---------------------------------------------------------------------- |
 | `data/`        | Meshes, images and other assets used by this project (`2d/`, `3d/`)     |
 | `deps/simkit/` | SimKit, as a recursive submodule tracking the `default_simkit_project` branch |
-| `experiments/` | One self-contained subfolder per experiment                            |
+| `experiments/` | Experiment scripts, one file per experiment                            |
 | `lib/`         | Project utility code and classes shared across experiments             |
+| `results/`     | Default output root — everything written here is gitignored            |
 
 ## Setup
 
@@ -68,20 +69,27 @@ prefer that when the experiment doesn't depend on it.
 
 ## Running an experiment
 
-Each experiment is a folder under `experiments/` with its own entry point and README:
+`experiments/` is a plain folder of scripts — one file per experiment, no package.
+Run them from the repository root with the root on `PYTHONPATH`, so `import lib`
+resolves:
 
 ```bash
-python -m experiments.<name>.run
+PYTHONPATH=. python experiments/my_experiment.py
 ```
 
-Shared helpers go in `lib/`, which resolves paths relative to the repo root:
+Shared helpers go in `lib/`, which resolves paths relative to the repo root
+regardless of where a script is run from:
 
 ```python
-from lib import data_path
+from lib import data_path, results_path
 
-mesh = data_path("3d", "bunny.obj")   # <repo>/data/3d/bunny.obj
+mesh = data_path("3d", "bunny.obj")              # <repo>/data/3d/bunny.obj
+out  = results_path("my_experiment", "energy.png")  # <repo>/results/my_experiment/...
 ```
 
-Keep `lib/` types flat — plain functions and shallow dataclasses, not deep
-hierarchies. Experiment outputs (`results/`, renders, `.npz` caches) are gitignored;
+Write outputs to `results/`, by default under a subfolder named after the script;
+`results_path()` creates that subfolder for you. The whole tree is gitignored —
 commit the script and the conclusions, not the artifacts.
+
+Keep `lib/` types flat — plain functions and shallow dataclasses, not deep
+hierarchies.
