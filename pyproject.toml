@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "default-simkit-project"
+version = "0.1.0"
+description = "Default SimKit research project: experiments, demos and shared utilities"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Otman Benchekroun", email = "otmanbench@mit.edu"}
+]
+
+# SimKit is intentionally absent here: it is vendored at deps/simkit and
+# installed editable from there, so this project never pulls a PyPI copy that
+# would shadow the submodule. See the README for the install order.
+dependencies = []
+
+[tool.setuptools]
+# Only lib/ is importable. experiments/ and demos/ are folders of scripts,
+# deliberately not packages -- installing this project is what puts lib/ on
+# sys.path, so those scripts can `from lib import ...` from any cwd.
+packages = ["lib"]

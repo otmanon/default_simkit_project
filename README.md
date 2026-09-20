@@ -11,9 +11,10 @@ on a branch owned by this project.
 | -------------- | ---------------------------------------------------------------------- |
 | `data/`        | Meshes, images and other assets used by this project (`2d/`, `3d/`)     |
 | `deps/simkit/` | SimKit, as a recursive submodule tracking the `default_simkit_project` branch |
+| `demos/`       | Interactive demo scripts — they render, they don't write output        |
 | `experiments/` | Experiment scripts, one file per experiment                            |
-| `lib/`         | Project utility code and classes shared across experiments             |
-| `results/`     | Default output root — everything written here is gitignored            |
+| `lib/`         | Project utility code and classes shared by both                        |
+| `results/`     | Default output root for experiments — gitignored                       |
 
 ## Setup
 
@@ -30,14 +31,18 @@ Already cloned without it:
 git submodule update --init --recursive
 ```
 
-Then install SimKit in editable mode, so edits under `deps/simkit/` take effect
-immediately:
+Then install SimKit and this project, both editable — so edits under
+`deps/simkit/` take effect immediately and `import lib` works from any directory:
 
 ```bash
 conda create -n default_simkit_project python=3.11
 conda activate default_simkit_project
-pip install -e "deps/simkit[all]"
+pip install -e "deps/simkit[all]" -e .
 ```
+
+Order matters only in that SimKit must come from `deps/simkit`, never PyPI; this
+project declares no dependency on it precisely so a released copy can't shadow the
+submodule.
 
 SimKit's base install needs only `numpy` and `scipy`; `[all]` adds meshing, viz
 (`libigl`, `matplotlib`, `polyscope`), solvers, video and CMA-ES. Swap in narrower
@@ -67,29 +72,43 @@ git commit -m "Bump simkit"
 A change that isn't specific to this project belongs upstream on `main` instead —
 prefer that when the experiment doesn't depend on it.
 
-## Running an experiment
+## Experiments and demos
 
-`experiments/` is a plain folder of scripts — one file per experiment, no package.
-Run them from the repository root with the root on `PYTHONPATH`, so `import lib`
-resolves:
+Both are plain folders of scripts — one file each, no packages, nothing to invoke
+through `-m`. Because the project is installed editable, they run directly:
 
 ```bash
-PYTHONPATH=. python experiments/my_experiment.py
+python experiments/my_experiment.py
+python demos/my_demo.py
 ```
 
-Shared helpers go in `lib/`, which resolves paths relative to the repo root
-regardless of where a script is run from:
+**Experiments** measure something and persist it. They write to `results/`, by
+default a subfolder named after the script; `results_path()` creates it for you:
 
 ```python
 from lib import data_path, results_path
 
-mesh = data_path("3d", "bunny.obj")              # <repo>/data/3d/bunny.obj
+mesh = data_path("3d", "bunny.obj")                 # <repo>/data/3d/bunny.obj
 out  = results_path("my_experiment", "energy.png")  # <repo>/results/my_experiment/...
 ```
 
-Write outputs to `results/`, by default under a subfolder named after the script;
-`results_path()` creates that subfolder for you. The whole tree is gitignored —
-commit the script and the conclusions, not the artifacts.
+`results/` is gitignored end to end — commit the script and the conclusions, not
+the artifacts.
 
-Keep `lib/` types flat — plain functions and shallow dataclasses, not deep
-hierarchies.
+**Demos** show something. They open an interactive viewer (polyscope) and store
+nothing, so a demo script should not import `results_path` at all; if you find
+yourself saving frames or arrays from one, it has become an experiment and belongs
+in `experiments/`.
+
+```python
+from lib import data_path
+import polyscope as ps
+
+ps.init()
+# ... register geometry, set callbacks ...
+ps.show()
+```
+
+Shared helpers for either go in `lib/`, whose paths resolve relative to the repo
+root regardless of cwd. Keep those types flat — plain functions and shallow
+dataclasses, not deep hierarchies.

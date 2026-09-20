@@ -1,7 +1,8 @@
 """Project-local utility library.
 
-Everything reusable across ``experiments/`` lives here: loaders, subspace
-builders, plotting helpers, small dataclasses holding run configuration.
+Everything reusable across ``experiments/`` and ``demos/`` lives here: loaders,
+subspace builders, plotting helpers, small dataclasses holding run
+configuration.
 
 Convention
 ----------
@@ -11,14 +12,14 @@ variant, prefer another function or an extra field over a subclass.
 
 Usage
 -----
-Scripts in ``experiments/`` import from the package root::
+Scripts import from the package root::
 
     from lib import data_path, results_path
 
-so re-export the public surface of each new module here. Those scripts are run
-from the repository root with the root on ``PYTHONPATH``::
+so re-export the public surface of each new module here. ``pip install -e .``
+puts this package on ``sys.path``, so scripts run directly, from any cwd::
 
-    PYTHONPATH=. python experiments/my_experiment.py
+    python experiments/my_experiment.py
 """
 
 from pathlib import Path
@@ -28,6 +29,7 @@ __all__ = [
     "DATA_DIR",
     "DEPS_DIR",
     "EXPERIMENTS_DIR",
+    "DEMOS_DIR",
     "RESULTS_DIR",
     "data_path",
     "results_path",
@@ -39,8 +41,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 DEPS_DIR = ROOT / "deps"
 EXPERIMENTS_DIR = ROOT / "experiments"
+DEMOS_DIR = ROOT / "demos"
 
-#: Default output root. Everything written here is gitignored.
+#: Default output root for experiments. Everything written here is gitignored.
 RESULTS_DIR = ROOT / "results"
 
 
